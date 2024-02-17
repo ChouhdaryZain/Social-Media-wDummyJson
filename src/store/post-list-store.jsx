@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid'; // To generate unique ID evert time with cr
 
 export const PostList = createContext({
   postList: [],
-  fetching: false,
   addPost: () => { },
   deletePost: () => { },
 });
@@ -14,7 +13,7 @@ const postListReducer = (currPostList, action) => {
   let newPostList = currPostList;
   if (action.type === "DELETE_POST") {
     newPostList = currPostList.filter((post) => post.id !== action.payload.postId);
-  } 
+  }
   else if (action.type === "ADD_INITIAL_POSTS") {
     newPostList = action.payload.posts;
   }
@@ -53,28 +52,9 @@ const PostListProvider = ({ children }) => {
     })
   }
 
-  const [fetching, setFetching] = useState(false);
-
-  useEffect(() => {
-    setFetching(true);
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    fetch('https://dummyjson.com/posts', { signal })
-      .then(res => res.json())
-      .then(data => {
-        addInitialPost(data.posts);
-        setFetching(false);
-      });
-
-    return () => {
-      controller.abort();
-    }
-  }, []);
-
 
   return (
-    <PostList.Provider value={{ postList: postList, fetching: fetching, addPost: addPost, deletePost: deletePost }}>
+    <PostList.Provider value={{ postList: postList, addPost: addPost, deletePost: deletePost }}>
       {children}
     </PostList.Provider>
   )
